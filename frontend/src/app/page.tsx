@@ -1,32 +1,31 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Timer from "@/components/Time";
-import CreateTask from "@/components/CreateTask";
-import TaskList from "@/components/TaskList";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Timer from "@/components/Timer"
+import CreateTask from "@/components/CreateTask"
+import TaskList from "@/components/TaskList"
+import { useState } from "react"
 
-// Definindo o tipo da tarefa
 interface Task {
   title: string;
-  category: "Study" | "Personal" | "Work";
-  status: "Concluido" | "A fazer";
   time: string;
+  status: "Concluido" | "Em execução..." | "A fazer";
+  category: "Work" | "Personal" | "Study";
 }
 
 export default function Home() {
+  
   const [tasks, setTasks] = useState<Task[]>([
-    { title: "Estudar React", category: "Study", status: "Concluido", time: "02:00" },
-    { title: "Preparar apresentação", category: "Personal", status: "A fazer", time: "01:30" },
-    { title: "Ler e-mails", category: "Work", status: "A fazer", time: "01:00" },
-    { title: "Correr", category: "Personal", status: "A fazer", time: "01:00:00" },
-    { title: "Fazer commit", category: "Work", status: "A fazer", time: "01:00" },
-    { title: "Estudar ingles", category: "Study", status: "A fazer", time: "10:00" },
+    { title: "Estudar Ingles", category: "Study", status: "A fazer", time: "01:00:00" },
+    { title: "Ler e-mails", category: "Work", status: "A fazer", time: "01:00:00" },
+    { title: "Academia", category: "Personal", status: "A fazer", time: "01:00:00" },
+    { title: "Estudar TypeScript", category: "Study", status: "A fazer", time: "01:00:00" },
   ]);
 
-  // Função para adicionar uma nova tarefa
-  const addTask = (newTask: Task) => {
-    setTasks([...tasks, newTask]);
+  const onAddTask = (task: Task) => {
+    setTasks((newTask) => [
+      ...newTask, { ...task, status: "A fazer" }, 
+    ]);
   };
 
   return (
@@ -41,13 +40,11 @@ export default function Home() {
 
       <div className="flex justify-center w-full max-w-5xl space-x-8">
         <div className="flex flex-col space-y-8 w-full max-w-md">
-          <Timer />
-          {/* Passando a função de adicionar tarefa como prop */}
-          <CreateTask onAddTask={addTask} />
+          <Timer/>
+          <CreateTask onAddTask={onAddTask}/> 
         </div>
-        {/* Passando as tarefas como prop para TaskList */}
-        <TaskList tasks={tasks} />
+        <TaskList tasks={tasks}/> 
       </div>
     </main>
-  );
+  )
 }

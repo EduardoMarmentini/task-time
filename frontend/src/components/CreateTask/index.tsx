@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,43 +20,35 @@ import {
 
 interface Task {
   title: string;
-  category: string;
-  status: "Concluido" | "A fazer";
   time: string;
+  category: "Study" | "Personal" | "Work";
 }
 
-interface CreateTaskProps {
-  onAddTask: (newTask: Task) => void;
-}
+export default function CreateTask({ onAddTask }: { onAddTask: (task: Task) => void }) {
 
-export default function CreateTask({ onAddTask }: CreateTaskProps) {
-  const [task, setTask] = useState<Task>({
-    title: "",
-    time: "",
-    category: "", // Default value
-    status: "A fazer",
-  });
+  const [title, setTitle] = useState("");
+  const [time, setTime] = useState("00:00:00");
+  const [category, setCategory] = useState<Task["category"] | "">("");
 
-  const onSave = (event: FormEvent<HTMLFormElement>) => {
+  // Função que envia a nova task para a lista
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!task.title || !task.time || !task.category) {
-      alert("Preencha todos os campos antes de salvar!");
+    // Verifica se os campos preenchidos
+    if (!title || !time || !category) {
+      alert("Preencha os campos");
       return;
     }
 
-    onAddTask(task);
+    const newTask: Task = { title, time, category: category as Task["category"] };
 
-    setTask({ title: "", time: "", category: "", status: "A fazer" });
-  };
+    // Chama a função para adicionar a task
+    onAddTask(newTask); 
 
-  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = event.target;
-    setTask((prevTask) => ({ ...prevTask, [id]: value }));
-  };
-
-  const onSelectChange = (value: "Study" | "Personal" | "Work") => {
-    setTask((prevTask) => ({ ...prevTask, category: value }));
+    // Limpar o formulário
+    setTitle("");
+    setTime("00:00:00");
+    setCategory("");
   };
 
   return (
@@ -65,14 +57,14 @@ export default function CreateTask({ onAddTask }: CreateTaskProps) {
         <CardTitle className="text-2xl font-bold text-center">New Task</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSave} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="title">Task Title</Label>
             <Input
               id="title"
               placeholder="Enter task title"
-              value={task.title}
-              onChange={onInputChange}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
               required
             />
           </div>
@@ -82,15 +74,19 @@ export default function CreateTask({ onAddTask }: CreateTaskProps) {
             <Input
               id="time"
               type="time"
-              value={task.time}
-              onChange={onInputChange}
+              step="60"
+              value={time}
+              onChange={(event) => setTime(event.target.value)}
               required
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select onValueChange={onSelectChange} value={task.category}>
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value as Task["category"])}
+            >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
